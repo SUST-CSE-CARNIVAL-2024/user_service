@@ -17,7 +17,7 @@ import User from "./User.model";
 
 export interface NotificationAttributes {
   id: number;
-  email: string;
+  opposit_email: string;
   userId: number;
   expires_at: Date;
   valid: boolean;
