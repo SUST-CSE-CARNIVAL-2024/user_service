@@ -1,5 +1,5 @@
 //import user model
-import Mentor from "../models/User.model";
+import Mentor from "../models/Mentor.model";
 
 //internal imports
 import log from "../../utils/logger";

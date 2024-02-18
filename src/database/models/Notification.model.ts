@@ -15,24 +15,24 @@ import sequelizeConnection from "../config";
 import { Json } from "sequelize/types/utils";
 import User from "./User.model";
 
-export interface ClientAttributes {
+export interface NotificationAttributes {
   id: number;
   userId: number;
-  emotionalState: Json;
+  expires_at: Date;
+  valid: boolean;
+  preChatSessionId: number;
 }
 
-export interface ClientCreationAttributes
-  extends Optional<ClientAttributes, "emotionalState"> {}
-
-class Client extends Model implements ClientAttributes {
+class Notification extends Model implements NotificationAttributes {
   public id!: number;
-  public emotionalState!: Json;
-
-  // define associations
+  public expires_at!: Date;
+  public valid!: boolean;
+  public preChatSessionId!: number;
+  public readonly createdAt!: Date;
   public userId!: number;
 }
 
-Client.init(
+Notification.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -45,16 +45,26 @@ Client.init(
       allowNull: false,
     },
 
-    emotionalState: {
-      type: DataTypes.JSON,
-      allowNull: true,
+    expires_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+
+    valid: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+    },
+
+    preChatSessionId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
   },
   {
     sequelize: sequelizeConnection,
-    tableName: "clients",
+    tableName: "notifications",
     timestamps: true,
   }
 );
 
-export default Client;
+export default Notification;

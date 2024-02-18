@@ -15,24 +15,25 @@ import sequelizeConnection from "../config";
 import { Json } from "sequelize/types/utils";
 import User from "./User.model";
 
-export interface ClientAttributes {
+export interface PreChatSesstionAttributes {
   id: number;
-  userId: number;
-  emotionalState: Json;
+  victimId: number;
+  seeking_emotionalState: Json;
+  expires_at: Date;
+  createdAt?: Date;
 }
 
-export interface ClientCreationAttributes
-  extends Optional<ClientAttributes, "emotionalState"> {}
-
-class Client extends Model implements ClientAttributes {
+class PreChatSesstion extends Model implements PreChatSesstionAttributes {
   public id!: number;
-  public emotionalState!: Json;
+  public victimId!: number;
+  public seeking_emotionalState!: Json;
+  public expires_at: Date;
+  public readonly createdAt!: Date;
 
   // define associations
-  public userId!: number;
 }
 
-Client.init(
+PreChatSesstion.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -40,21 +41,26 @@ Client.init(
       primaryKey: true,
     },
 
-    userId: {
+    victimId: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
 
-    emotionalState: {
+    seeking_emotionalState: {
       type: DataTypes.JSON,
+      allowNull: true,
+    },
+
+    expires_at: {
+      type: DataTypes.DATE,
       allowNull: true,
     },
   },
   {
     sequelize: sequelizeConnection,
-    tableName: "clients",
+    tableName: "pre_chat_sessions",
     timestamps: true,
   }
 );
 
-export default Client;
+export default PreChatSesstion;

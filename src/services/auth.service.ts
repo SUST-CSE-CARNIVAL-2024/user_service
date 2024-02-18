@@ -21,6 +21,11 @@ import broker, {
 } from "../utils/broker";
 import clientService from "./client.service";
 import mentorService from "./mentor.service";
+import {
+  createChatQuestions,
+  createMentorQuestions,
+} from "../utils/createChatQuestions";
+import axios from "axios";
 
 // ============================== UserService ============================== //
 
@@ -45,7 +50,7 @@ class UserService implements UserServiceInterface {
   // ----------------------------------------- SignUP ------------------------------------------ //
   async SignUp(userInput: Signup_Body_Input) {
     try {
-      const { email, password, role } = userInput;
+      const { email, password, role, questionnaires } = userInput;
 
       const existingUser = await this.repository.findUserByEmail(email);
 
@@ -54,24 +59,51 @@ class UserService implements UserServiceInterface {
 
       const newUser = await this.repository.createUser(userInput);
 
+      //! have to pass the questionnaires to the gpt and update the expertise_emotionalState
+      let questionAns = [];
+
+      for (let i = 0; i < questionnaires.length; i++) {
+        questionAns.push({
+          Question:
+            role === "client"
+              ? createChatQuestions[i]
+              : createMentorQuestions[i],
+          Answer: questionnaires[i],
+        });
+      }
+
+      // get response from chat processing service
+      const chatProcessingResponse = await axios.post(
+        "http://localhost:8082/api/emotion",
+        {
+          qna_list: questionAns,
+        }
+      );
+
+      //log.debug(chatProcessingResponse, "chatProcessingResponse");
+
+      let currEmotionalState = JSON.parse(chatProcessingResponse.data);
+
       //! have to add to client or mentor table
       if (role === UserRole.CLIENT) {
         const newClient = await clientService.addNewClient({
           userId: newUser.id,
         });
 
-        await newUser.setClient(newClient);
-        await newClient.setUser(newUser);
+        newClient.emotionalState = currEmotionalState;
+
+        await newClient.save();
       } else if (role === UserRole.MENTOR) {
         const newMentor = await mentorService.addNewMentor({
           userId: newUser.id,
         });
 
-        await newUser.setMentor(newMentor);
-        await newMentor.setUser(newUser);
+        newMentor.expertise_emotionalState = currEmotionalState;
+
+        await newMentor.save();
       }
 
-      //! have to pass the questionnaires to the gpt and update the expertise_emotionalState
+      //update the emotional state
 
       // generate JWT token
       const token_payload: JWT_Payload = {

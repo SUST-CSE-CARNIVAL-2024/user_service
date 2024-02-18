@@ -29,14 +29,7 @@ class AuthSchema implements Auth_Schema_Interface {
         message: `Role must be one of ${Object.values(UserRole).join(", ")}`,
       }),
 
-      questionnaires: object({
-        id: number({
-          required_error: "Questionnaire ID is required",
-        }),
-        answers: string({
-          required_error: "Answers are required",
-        }),
-      })
+      questionnaires: string()
         .array()
         .min(1, "At least one questionnaire is required"),
     }),

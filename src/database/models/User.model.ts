@@ -29,18 +29,6 @@ class User extends Model implements UserAttributes {
   public password!: string;
   public role!: string;
   public salt!: string;
-
-  // define associations
-  public getClient!: HasOneGetAssociationMixin<Client>;
-  public setClient!: HasOneSetAssociationMixin<Client, number>;
-
-  public getMentor!: HasOneGetAssociationMixin<Mentor>;
-  public setMentor!: HasOneSetAssociationMixin<Mentor, number>;
-
-  public static associations: {
-    client: Association<User, Client>;
-    mentor: Association<User, Mentor>;
-  };
 }
 
 User.init(
@@ -81,25 +69,3 @@ User.init(
 );
 
 export default User;
-
-//------------------------- relations -------------------------//
-
-// between User and Client
-import Client from "./Client.model";
-
-User.hasOne(Client, {
-  foreignKey: "userId",
-});
-Client.belongsTo(User, {
-  foreignKey: "userId",
-});
-
-// between User and Mentor
-import Mentor from "./Mentor.model";
-User.hasOne(Mentor, {
-  foreignKey: "userId",
-});
-
-Mentor.belongsTo(User, {
-  foreignKey: "userId",
-});

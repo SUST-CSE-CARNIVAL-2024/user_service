@@ -30,12 +30,6 @@ class Mentor extends Model implements MentorAttributes {
 
   // define associations
   public userId!: number;
-  public getUser!: BelongsToGetAssociationMixin<User>;
-  public setUser!: BelongsToSetAssociationMixin<User, number>;
-
-  public static associations: {
-    user: Association<Mentor, User>;
-  };
 }
 
 Mentor.init(
