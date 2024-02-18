@@ -260,6 +260,14 @@ class User_Controller implements User_Controller_Interface {
 
       const victim = await User.findByPk(victimId);
 
+      //send notification to the victim
+      await Notification.create({
+        userId: victimId,
+        expires_at: new Date(Date.now() + 1000 * 60 * 20), // 5 minutes
+        valid: true,
+        preChatSessionId: newChatSession.id,
+      });
+
       res.status(201).json({
         victimEmail: victim.email,
         chatSessionId: newChatSession.id,
