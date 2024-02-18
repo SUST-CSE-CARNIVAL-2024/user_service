@@ -17,6 +17,7 @@ import User from "./User.model";
 
 export interface NotificationAttributes {
   id: number;
+  email: string;
   userId: number;
   expires_at: Date;
   valid: boolean;
@@ -25,6 +26,7 @@ export interface NotificationAttributes {
 
 class Notification extends Model implements NotificationAttributes {
   public id!: number;
+  public opposit_email!: string;
   public expires_at!: Date;
   public valid!: boolean;
   public preChatSessionId!: number;
@@ -58,6 +60,11 @@ Notification.init(
     preChatSessionId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+
+    opposit_email: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {

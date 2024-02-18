@@ -185,6 +185,7 @@ class User_Controller implements User_Controller_Interface {
 
       log.debug(scores, "scores");
 
+      let opposit_user = await User.findByPk(user.userId);
       // send notification to the top 5
       await Promise.all(
         scores.map(async (score) => {
@@ -193,6 +194,7 @@ class User_Controller implements User_Controller_Interface {
             expires_at: new Date(Date.now() + 1000 * 60 * 20), // 5 minutes
             valid: true,
             preChatSessionId: newPreChatSession.id,
+            opposit_email: opposit_user.email,
           });
         })
       );
@@ -260,12 +262,15 @@ class User_Controller implements User_Controller_Interface {
 
       const victim = await User.findByPk(victimId);
 
+      const user = await User.findByPk(userId);
+
       //send notification to the victim
       await Notification.create({
         userId: victimId,
         expires_at: new Date(Date.now() + 1000 * 60 * 20), // 5 minutes
         valid: true,
         preChatSessionId: newChatSession.id,
+        opposit_email: user.email,
       });
 
       res.status(201).json({
@@ -297,7 +302,7 @@ class User_Controller implements User_Controller_Interface {
         },
       });
 
-      res.status(200).json({ email: user.email, ...notifications });
+      res.status(200).json(notifications);
     } catch (error) {
       next(error);
     }
