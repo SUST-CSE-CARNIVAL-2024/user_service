@@ -286,6 +286,7 @@ class User_Controller implements User_Controller_Interface {
     }
 
     try {
+      const user = await User.findByPk(userId);
       const notifications = await Notification.findAll({
         where: {
           userId,
@@ -296,7 +297,7 @@ class User_Controller implements User_Controller_Interface {
         },
       });
 
-      res.status(200).json(notifications);
+      res.status(200).json({ email: user.email, ...notifications });
     } catch (error) {
       next(error);
     }
